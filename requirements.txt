@@ -1,0 +1,13 @@
+# API
+fastapi>=0.110
+uvicorn[standard]>=0.29
+
+# runtime
+requests>=2.31
+pydantic>=2.7
+
+# console
+streamlit>=1.49
+
+# tests
+pytest>=8.0

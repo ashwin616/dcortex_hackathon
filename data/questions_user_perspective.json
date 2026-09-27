@@ -1,0 +1,1216 @@
+{
+ "meta": {
+  "title": "Crew Ops Advisor — additional user-perspective questions",
+  "generated_for": "plan/crew-ops-advisor-dataset",
+  "snapshot_utc": "2026-09-14T18:00:00Z",
+  "week": "2026-09-14 to 2026-09-20",
+  "currency": "INR",
+  "all_times": "UTC",
+  "schema": "Same shape as data/questions.json, plus 'persona' on every row and 'grading_note' on open-ended rows.",
+  "question_count": 32,
+  "tier_counts": {
+   "1": 12,
+   "2": 12,
+   "3": 8
+  },
+  "personas": [
+   "Crew Controller (ops desk)",
+   "Crew Planner",
+   "Duty Manager"
+  ],
+  "note": "Question ids continue from the existing set (Q01-Q38), so this file can be concatenated with data/questions.json without collision. Every deterministic answer here was computed from data/ rather than written by hand."
+ },
+ "questions": [
+  {
+   "question_id": "Q39",
+   "tier": 1,
+   "persona": "Crew Controller (ops desk)",
+   "prompt": "Which of my crew are unavailable this week because they are on leave or in training?",
+   "expected_answer": [
+    {
+     "crew_id": "C-1564",
+     "rank": "Captain",
+     "base": "BLR",
+     "status": "leave"
+    },
+    {
+     "crew_id": "C-1606",
+     "rank": "Cabin Crew",
+     "base": "DEL",
+     "status": "leave"
+    },
+    {
+     "crew_id": "C-2442",
+     "rank": "Captain",
+     "base": "BLR",
+     "status": "leave"
+    },
+    {
+     "crew_id": "C-2561",
+     "rank": "Cabin Crew",
+     "base": "BLR",
+     "status": "leave"
+    },
+    {
+     "crew_id": "C-4621",
+     "rank": "Cabin Crew",
+     "base": "BLR",
+     "status": "leave"
+    },
+    {
+     "crew_id": "C-5015",
+     "rank": "Captain",
+     "base": "BLR",
+     "status": "leave"
+    },
+    {
+     "crew_id": "C-3816",
+     "rank": "First Officer",
+     "base": "DEL",
+     "status": "training"
+    },
+    {
+     "crew_id": "C-4104",
+     "rank": "First Officer",
+     "base": "DEL",
+     "status": "training"
+    }
+   ],
+   "explanation": "Filter crew.json on status != 'active'. None of them appear on any pairing this week, so this is an availability-pool question, not a roster-gap question.",
+   "rules_ref": []
+  },
+  {
+   "question_id": "Q40",
+   "tier": 1,
+   "persona": "Crew Planner",
+   "prompt": "How many cabin crew do I have at BLR, split by Senior Cabin Crew and Cabin Crew?",
+   "expected_answer": {
+    "Senior Cabin Crew": 25,
+    "Cabin Crew": 61,
+    "total": 86
+   },
+   "explanation": "Count crew.json rows where base = BLR and rank is a cabin rank.",
+   "rules_ref": []
+  },
+  {
+   "question_id": "Q41",
+   "tier": 1,
+   "persona": "Crew Controller (ops desk)",
+   "prompt": "What time does the P-2204 crew report and release on 17 Sep, and how long is that duty?",
+   "expected_answer": {
+    "report_utc": "2026-09-17T01:30:00Z",
+    "release_utc": "2026-09-17T12:45:00Z",
+    "duty_hours": 11.25,
+    "sectors": 4,
+    "fdp_limit_hours": 12.0
+   },
+   "explanation": "rosters.json P-2204. Duty length = release - report; FDP limit = 13 - 0.5 per sector beyond the 2nd.",
+   "rules_ref": [
+    "RULE-FDP-01"
+   ]
+  },
+  {
+   "question_id": "Q42",
+   "tier": 1,
+   "persona": "Crew Controller (ops desk)",
+   "prompt": "Is C-2091 cleared to fly the A320?",
+   "expected_answer": {
+    "cleared": false,
+    "ratings": [
+     "ATR72"
+    ],
+    "rank": "Captain"
+   },
+   "explanation": "crew.json: C-2091 holds an ATR72 rating only. This is the standard RULE-QUAL-05 exclusion case.",
+   "rules_ref": [
+    "RULE-QUAL-05"
+   ]
+  },
+  {
+   "question_id": "Q43",
+   "tier": 1,
+   "persona": "Crew Controller (ops desk)",
+   "prompt": "Who is on reserve and inside their on-call window at 02:00Z on 16 Sep?",
+   "expected_answer": [
+    {
+     "crew_id": "C-3305",
+     "rank": "Captain",
+     "base": "BLR",
+     "ratings": [
+      "A320"
+     ],
+     "window": {
+      "start": "00:00",
+      "end": "05:30"
+     }
+    },
+    {
+     "crew_id": "C-3312",
+     "rank": "First Officer",
+     "base": "BLR",
+     "ratings": [
+      "A320"
+     ],
+     "window": {
+      "start": "00:00",
+      "end": "12:00"
+     }
+    },
+    {
+     "crew_id": "C-4809",
+     "rank": "Cabin Crew",
+     "base": "BLR",
+     "ratings": [
+      "A320",
+      "ATR72"
+     ],
+     "window": {
+      "start": "00:00",
+      "end": "12:00"
+     }
+    }
+   ],
+   "explanation": "Filter reserve_pool.json to windows containing 02:00Z on that date. Note the pool is thin at that hour — only the early windows are open.",
+   "rules_ref": [
+    "RULE-BASE-07"
+   ]
+  },
+  {
+   "question_id": "Q44",
+   "tier": 1,
+   "persona": "Duty Manager",
+   "prompt": "How many block hours does the whole network fly on 18 Sep, and across how many legs?",
+   "expected_answer": {
+    "block_hours": 36.25,
+    "legs": 21
+   },
+   "explanation": "Sum block_hours in flights.json for the date.",
+   "rules_ref": []
+  },
+  {
+   "question_id": "Q45",
+   "tier": 1,
+   "persona": "Crew Planner",
+   "prompt": "Which five crew are closest to the 100-hour / 28-day flight limit, and how much room is left?",
+   "expected_answer": [
+    {
+     "crew_id": "C-2143",
+     "flight_hours_28d": 71.74,
+     "headroom_hours": 28.26
+    },
+    {
+     "crew_id": "C-4296",
+     "flight_hours_28d": 69.82,
+     "headroom_hours": 30.18
+    },
+    {
+     "crew_id": "C-1594",
+     "flight_hours_28d": 69.13,
+     "headroom_hours": 30.87
+    },
+    {
+     "crew_id": "C-1526",
+     "flight_hours_28d": 68.74,
+     "headroom_hours": 31.26
+    },
+    {
+     "crew_id": "C-1017",
+     "flight_hours_28d": 68.68,
+     "headroom_hours": 31.32
+    }
+   ],
+   "explanation": "Sum daily_history flight_hours over the 28 days ending 2026-09-14 and rank descending; headroom = 100 - total.",
+   "rules_ref": [
+    "RULE-FLT-03"
+   ]
+  },
+  {
+   "question_id": "Q46",
+   "tier": 1,
+   "persona": "Crew Planner",
+   "prompt": "Which pairings this week overnight away from base, and where do they night-stop?",
+   "expected_answer": [
+    {
+     "pairing_id": "P-2291",
+     "aircraft": "VT-DXC",
+     "dates": [
+      "2026-09-15",
+      "2026-09-16"
+     ],
+     "overnight_station": "DEL"
+    },
+    {
+     "pairing_id": "P-2293",
+     "aircraft": "VT-DXC",
+     "dates": [
+      "2026-09-17",
+      "2026-09-18"
+     ],
+     "overnight_station": "DEL"
+    },
+    {
+     "pairing_id": "P-2295",
+     "aircraft": "VT-DXC",
+     "dates": [
+      "2026-09-19",
+      "2026-09-20"
+     ],
+     "overnight_station": "DEL"
+    }
+   ],
+   "explanation": "Pairings in rosters.json with more than one day; the night-stop is the arrival station of the last leg of day 1. Hotel cost ₹4200 per overnight applies.",
+   "rules_ref": []
+  },
+  {
+   "question_id": "Q47",
+   "tier": 1,
+   "persona": "Duty Manager",
+   "prompt": "What does it cost me to call out a reserve versus someone on a day off, for a pilot and for cabin crew?",
+   "expected_answer": {
+    "reserve_callout_pilot": 18500,
+    "dayoff_callout_pilot": 24000,
+    "pilot_delta": 5500,
+    "reserve_callout_cabin": 9500,
+    "dayoff_callout_cabin": 12500,
+    "cabin_delta": 3000,
+    "currency": "INR"
+   },
+   "explanation": "costs.json. A day-off callout costs ₹5,500 more for a pilot and ₹3,000 more for cabin crew, which is why reserves are always ranked first when legal.",
+   "rules_ref": []
+  },
+  {
+   "question_id": "Q48",
+   "tier": 1,
+   "persona": "Duty Manager",
+   "prompt": "Which crew are carrying a disruption-risk score of 0.70 or higher?",
+   "expected_answer": [
+    {
+     "crew_id": "C-1042",
+     "score": 0.78,
+     "drivers": [
+      "short-rest pattern over last 14 days",
+      "two fatigue reports this month"
+     ]
+    },
+    {
+     "crew_id": "C-3940",
+     "score": 0.71,
+     "drivers": [
+      "elevated sick-call likelihood: cluster pattern at base"
+     ]
+    }
+   ],
+   "explanation": "risk_signals.json filtered at >= 0.70. These scores are a provided input, not something to be predicted.",
+   "rules_ref": []
+  },
+  {
+   "question_id": "Q49",
+   "tier": 1,
+   "persona": "Crew Controller (ops desk)",
+   "prompt": "When did C-2087 last come off rest, and what is their 7-day duty total as of the snapshot?",
+   "expected_answer": {
+    "last_rest_ended": "2026-09-15T02:00:00Z",
+    "duty_hours_7d": 51.83,
+    "headroom_hours": 8.17
+   },
+   "explanation": "duty_clocks.json. C-2087 is the tightest pilot on the duty clock and is the standard RULE-DUTY-02 exclusion case.",
+   "rules_ref": [
+    "RULE-DUTY-02",
+    "RULE-REST-04"
+   ]
+  },
+  {
+   "question_id": "Q50",
+   "tier": 1,
+   "persona": "Duty Manager",
+   "prompt": "How many legs does each aircraft operate on 15 Sep?",
+   "expected_answer": {
+    "VT-DXA": 4,
+    "VT-DXB": 4,
+    "VT-DXC": 3,
+    "VT-DXD": 4,
+    "VT-DXE": 4,
+    "VT-DXF": 2
+   },
+   "explanation": "Group flights.json by aircraft for the date.",
+   "rules_ref": []
+  },
+  {
+   "question_id": "Q51",
+   "tier": 2,
+   "persona": "Crew Controller (ops desk)",
+   "prompt": "If C-3310 takes both days of P-2291, how much 7-day duty headroom is he left with?",
+   "expected_answer": [
+    {
+     "date": "2026-09-15",
+     "duty_hours_7d_after_cover": 9.5,
+     "headroom_hours": 50.5
+    },
+    {
+     "date": "2026-09-16",
+     "duty_hours_7d_after_cover": 20.25,
+     "headroom_hours": 39.75
+    }
+   ],
+   "explanation": "C-3310 starts the week clean (0h in the trailing window), so both days sit far inside RULE-DUTY-02. Day 2 must include day 1's newly added duty.",
+   "rules_ref": [
+    "RULE-DUTY-02"
+   ]
+  },
+  {
+   "question_id": "Q52",
+   "tier": 2,
+   "persona": "Crew Planner",
+   "prompt": "Does anybody bust or come within 10 hours of the 100-hour / 28-day flight limit by the end of the week?",
+   "expected_answer": {
+    "breaches": [],
+    "within_10_hours": []
+   },
+   "explanation": "Roll the 28-day flight-hour window forward to 2026-09-20 using daily_history. Nobody breaches RULE-FLT-03; the list shows who is inside a 10-hour margin.",
+   "rules_ref": [
+    "RULE-FLT-03"
+   ]
+  },
+  {
+   "question_id": "Q53",
+   "tier": 2,
+   "persona": "Crew Controller (ops desk)",
+   "prompt": "A crew releases at 23:15Z on 18 Sep. Can I use them for a 10:00Z report on 19 Sep?",
+   "expected_answer": {
+    "legal": false,
+    "earliest_report_utc": "2026-09-19T11:15:00Z",
+    "requested_report_utc": "2026-09-19T10:00:00Z",
+    "rest_available_hours": 10.75,
+    "rest_required_hours": 12
+   },
+   "explanation": "RULE-REST-04 needs 12h between release and next report; 23:15Z + 12h = 11:15Z on 19 Sep, so a 10:00Z report is 1h15m short.",
+   "rules_ref": [
+    "RULE-REST-04"
+   ]
+  },
+  {
+   "question_id": "Q54",
+   "tier": 2,
+   "persona": "Crew Planner",
+   "prompt": "How long can a duty legally run if I roster four, five or six sectors?",
+   "expected_answer": {
+    "4_sectors": 12.0,
+    "5_sectors": 11.5,
+    "6_sectors": 11.0,
+    "formula": "13.0 - 0.5 x (sectors - 2)"
+   },
+   "explanation": "RULE-FDP-01: 13h base, reduced 0.5h per sector beyond the second.",
+   "rules_ref": [
+    "RULE-FDP-01"
+   ]
+  },
+  {
+   "question_id": "Q55",
+   "tier": 2,
+   "persona": "Crew Controller (ops desk)",
+   "prompt": "It is 04:30Z on 17 Sep and I need a Senior Cabin Crew at BLR. Who is inside their window?",
+   "expected_answer": [
+    {
+     "crew_id": "C-2111",
+     "base": "BLR",
+     "window": {
+      "start": "04:00",
+      "end": "16:00"
+     },
+     "ratings": [
+      "A320",
+      "ATR72"
+     ]
+    },
+    {
+     "crew_id": "C-3555",
+     "base": "DEL",
+     "window": {
+      "start": "03:00",
+      "end": "15:00"
+     },
+     "ratings": [
+      "A320"
+     ]
+    },
+    {
+     "crew_id": "C-3677",
+     "base": "BLR",
+     "window": {
+      "start": "04:00",
+      "end": "16:00"
+     },
+     "ratings": [
+      "A320",
+      "ATR72"
+     ]
+    }
+   ],
+   "explanation": "Reserve SCCs whose on-call window contains the required report time. All BLR cabin reserves hold both type ratings, so RULE-QUAL-05 does not bind here.",
+   "rules_ref": [
+    "RULE-BASE-07",
+    "RULE-QUAL-05"
+   ]
+  },
+  {
+   "question_id": "Q56",
+   "tier": 2,
+   "persona": "Duty Manager",
+   "prompt": "DEL is shut 06:00-10:00Z on 16 Sep. Which flights are caught in the window?",
+   "expected_answer": {
+    "affected_flights": [
+     "DX402-2026-09-16"
+    ],
+    "seats_at_risk": 162
+   },
+   "explanation": "Any leg departing or arriving DEL inside the closure window. Same logic as the BLR closure in scenario S3.",
+   "rules_ref": []
+  },
+  {
+   "question_id": "Q57",
+   "tier": 2,
+   "persona": "Crew Planner",
+   "prompt": "Which rostered duties this week have under an hour of FDP headroom? Those are the ones a delay will break first.",
+   "expected_answer": [
+    {
+     "pairing_id": "P-2201",
+     "date": "2026-09-14",
+     "aircraft": "VT-DXA",
+     "sectors": 4,
+     "duty_hours": 11.25,
+     "fdp_limit": 12.0,
+     "fdp_headroom_hours": 0.75
+    },
+    {
+     "pairing_id": "P-2208",
+     "date": "2026-09-14",
+     "aircraft": "VT-DXB",
+     "sectors": 4,
+     "duty_hours": 11.25,
+     "fdp_limit": 12.0,
+     "fdp_headroom_hours": 0.75
+    },
+    {
+     "pairing_id": "P-2202",
+     "date": "2026-09-15",
+     "aircraft": "VT-DXA",
+     "sectors": 4,
+     "duty_hours": 11.25,
+     "fdp_limit": 12.0,
+     "fdp_headroom_hours": 0.75
+    },
+    {
+     "pairing_id": "P-2209",
+     "date": "2026-09-15",
+     "aircraft": "VT-DXB",
+     "sectors": 4,
+     "duty_hours": 11.25,
+     "fdp_limit": 12.0,
+     "fdp_headroom_hours": 0.75
+    },
+    {
+     "pairing_id": "P-2203",
+     "date": "2026-09-16",
+     "aircraft": "VT-DXA",
+     "sectors": 4,
+     "duty_hours": 11.25,
+     "fdp_limit": 12.0,
+     "fdp_headroom_hours": 0.75
+    },
+    {
+     "pairing_id": "P-2210",
+     "date": "2026-09-16",
+     "aircraft": "VT-DXB",
+     "sectors": 4,
+     "duty_hours": 11.25,
+     "fdp_limit": 12.0,
+     "fdp_headroom_hours": 0.75
+    },
+    {
+     "pairing_id": "P-2204",
+     "date": "2026-09-17",
+     "aircraft": "VT-DXA",
+     "sectors": 4,
+     "duty_hours": 11.25,
+     "fdp_limit": 12.0,
+     "fdp_headroom_hours": 0.75
+    },
+    {
+     "pairing_id": "P-2211",
+     "date": "2026-09-17",
+     "aircraft": "VT-DXB",
+     "sectors": 4,
+     "duty_hours": 11.25,
+     "fdp_limit": 12.0,
+     "fdp_headroom_hours": 0.75
+    },
+    {
+     "pairing_id": "P-2205",
+     "date": "2026-09-18",
+     "aircraft": "VT-DXA",
+     "sectors": 4,
+     "duty_hours": 11.25,
+     "fdp_limit": 12.0,
+     "fdp_headroom_hours": 0.75
+    },
+    {
+     "pairing_id": "P-2212",
+     "date": "2026-09-18",
+     "aircraft": "VT-DXB",
+     "sectors": 4,
+     "duty_hours": 11.25,
+     "fdp_limit": 12.0,
+     "fdp_headroom_hours": 0.75
+    },
+    {
+     "pairing_id": "P-2206",
+     "date": "2026-09-19",
+     "aircraft": "VT-DXA",
+     "sectors": 4,
+     "duty_hours": 11.25,
+     "fdp_limit": 12.0,
+     "fdp_headroom_hours": 0.75
+    },
+    {
+     "pairing_id": "P-2213",
+     "date": "2026-09-19",
+     "aircraft": "VT-DXB",
+     "sectors": 4,
+     "duty_hours": 11.25,
+     "fdp_limit": 12.0,
+     "fdp_headroom_hours": 0.75
+    },
+    {
+     "pairing_id": "P-2207",
+     "date": "2026-09-20",
+     "aircraft": "VT-DXA",
+     "sectors": 4,
+     "duty_hours": 11.25,
+     "fdp_limit": 12.0,
+     "fdp_headroom_hours": 0.75
+    },
+    {
+     "pairing_id": "P-2214",
+     "date": "2026-09-20",
+     "aircraft": "VT-DXB",
+     "sectors": 4,
+     "duty_hours": 11.25,
+     "fdp_limit": 12.0,
+     "fdp_headroom_hours": 0.75
+    }
+   ],
+   "explanation": "For every roster day compute the FDP limit for its sector count and subtract the planned duty length. These duties are the delay-fragile ones — scenario S4 is exactly this failure mode.",
+   "rules_ref": [
+    "RULE-FDP-01"
+   ]
+  },
+  {
+   "question_id": "Q58",
+   "tier": 2,
+   "persona": "Crew Controller (ops desk)",
+   "prompt": "Someone suggested C-2091 to cover an A320 First Officer slot. Can I use them?",
+   "expected_answer": {
+    "legal": false,
+    "rule": "RULE-QUAL-05",
+    "detail": "C-2091 holds ['ATR72'] only — no A320 rating.",
+    "second_issue": "C-2091's medical_class1 also expires 2026-09-23, so the assignment needs a RULE-CERT-06 check on any later date.",
+    "rank": "Captain"
+   },
+   "explanation": "Rating check fails outright; the near-term medical expiry is a second thing the desk should notice.",
+   "rules_ref": [
+    "RULE-QUAL-05",
+    "RULE-CERT-06"
+   ]
+  },
+  {
+   "question_id": "Q59",
+   "tier": 2,
+   "persona": "Duty Manager",
+   "prompt": "If I lose VT-DXC's whole 15 Sep programme, how many passengers and how much money is that?",
+   "expected_answer": {
+    "flights": [
+     "DX412-2026-09-15",
+     "DX413-2026-09-15",
+     "DX588-2026-09-15"
+    ],
+    "leg_count": 3,
+    "passengers": 486,
+    "cancellation_cost_inr": 750000
+   },
+   "explanation": "flights.json filtered to the tail and date; cost = legs x ₹250000 from costs.json.",
+   "rules_ref": []
+  },
+  {
+   "question_id": "Q60",
+   "tier": 2,
+   "persona": "Crew Controller (ops desk)",
+   "prompt": "For P-2291 day 1, how much duty-clock headroom does each rostered crew member actually have?",
+   "expected_answer": [
+    {
+     "crew_id": "C-1042",
+     "role": "Captain",
+     "duty_hours_7d_before_duty": 20.93,
+     "headroom_hours": 39.07
+    },
+    {
+     "crew_id": "C-1694",
+     "role": "First Officer",
+     "duty_hours_7d_before_duty": 20.71,
+     "headroom_hours": 39.29
+    },
+    {
+     "crew_id": "C-3005",
+     "role": "Senior Cabin Crew",
+     "duty_hours_7d_before_duty": 17.7,
+     "headroom_hours": 42.3
+    },
+    {
+     "crew_id": "C-4395",
+     "role": "Cabin Crew",
+     "duty_hours_7d_before_duty": 18.7,
+     "headroom_hours": 41.3
+    },
+    {
+     "crew_id": "C-4273",
+     "role": "Cabin Crew",
+     "duty_hours_7d_before_duty": 21.21,
+     "headroom_hours": 38.79
+    },
+    {
+     "crew_id": "C-1873",
+     "role": "Cabin Crew",
+     "duty_hours_7d_before_duty": 18.78,
+     "headroom_hours": 41.22
+    }
+   ],
+   "explanation": "7-day duty totals to 2026-09-15 from daily_history, before the day's own duty is added. This is the check that decides who can absorb an extension.",
+   "rules_ref": [
+    "RULE-DUTY-02"
+   ]
+  },
+  {
+   "question_id": "Q61",
+   "tier": 2,
+   "persona": "Crew Planner",
+   "prompt": "Who is working the most duty days this week? I want to know where the concentration risk sits.",
+   "expected_answer": {
+    "max_duty_days": 3,
+    "crew": [
+     {
+      "crew_id": "C-1326",
+      "duty_days": 3,
+      "rank": "Senior Cabin Crew",
+      "pairings": [
+       "P-2229",
+       "P-2232",
+       "P-2235"
+      ]
+     },
+     {
+      "crew_id": "C-1385",
+      "duty_days": 3,
+      "rank": "Cabin Crew",
+      "pairings": [
+       "P-2208",
+       "P-2211",
+       "P-2214"
+      ]
+     },
+     {
+      "crew_id": "C-1594",
+      "duty_days": 3,
+      "rank": "Cabin Crew",
+      "pairings": [
+       "P-2222",
+       "P-2225",
+       "P-2228"
+      ]
+     },
+     {
+      "crew_id": "C-1671",
+      "duty_days": 3,
+      "rank": "Captain",
+      "pairings": [
+       "P-2222",
+       "P-2225",
+       "P-2228"
+      ]
+     },
+     {
+      "crew_id": "C-2083",
+      "duty_days": 3,
+      "rank": "Cabin Crew",
+      "pairings": [
+       "P-2215",
+       "P-2218",
+       "P-2221"
+      ]
+     },
+     {
+      "crew_id": "C-2143",
+      "duty_days": 3,
+      "rank": "Captain",
+      "pairings": [
+       "P-2208",
+       "P-2211",
+       "P-2214"
+      ]
+     },
+     {
+      "crew_id": "C-2221",
+      "duty_days": 3,
+      "rank": "Captain",
+      "pairings": [
+       "P-2229",
+       "P-2232",
+       "P-2235"
+      ]
+     },
+     {
+      "crew_id": "C-2791",
+      "duty_days": 3,
+      "rank": "First Officer",
+      "pairings": [
+       "P-2201",
+       "P-2204",
+       "P-2207"
+      ]
+     },
+     {
+      "crew_id": "C-2796",
+      "duty_days": 3,
+      "rank": "Senior Cabin Crew",
+      "pairings": [
+       "P-2208",
+       "P-2211",
+       "P-2214"
+      ]
+     },
+     {
+      "crew_id": "C-2875",
+      "duty_days": 3,
+      "rank": "First Officer",
+      "pairings": [
+       "P-2215",
+       "P-2218",
+       "P-2221"
+      ]
+     },
+     {
+      "crew_id": "C-3136",
+      "duty_days": 3,
+      "rank": "First Officer",
+      "pairings": [
+       "P-2222",
+       "P-2225",
+       "P-2228"
+      ]
+     },
+     {
+      "crew_id": "C-3757",
+      "duty_days": 3,
+      "rank": "Cabin Crew",
+      "pairings": [
+       "P-2201",
+       "P-2204",
+       "P-2207"
+      ]
+     },
+     {
+      "crew_id": "C-3897",
+      "duty_days": 3,
+      "rank": "Cabin Crew",
+      "pairings": [
+       "P-2229",
+       "P-2232",
+       "P-2235"
+      ]
+     },
+     {
+      "crew_id": "C-4242",
+      "duty_days": 3,
+      "rank": "Senior Cabin Crew",
+      "pairings": [
+       "P-2222",
+       "P-2225",
+       "P-2228"
+      ]
+     },
+     {
+      "crew_id": "C-4458",
+      "duty_days": 3,
+      "rank": "Cabin Crew",
+      "pairings": [
+       "P-2208",
+       "P-2211",
+       "P-2214"
+      ]
+     },
+     {
+      "crew_id": "C-4462",
+      "duty_days": 3,
+      "rank": "Cabin Crew",
+      "pairings": [
+       "P-2201",
+       "P-2204",
+       "P-2207"
+      ]
+     },
+     {
+      "crew_id": "C-4520",
+      "duty_days": 3,
+      "rank": "First Officer",
+      "pairings": [
+       "P-2229",
+       "P-2232",
+       "P-2235"
+      ]
+     },
+     {
+      "crew_id": "C-4531",
+      "duty_days": 3,
+      "rank": "Cabin Crew",
+      "pairings": [
+       "P-2215",
+       "P-2218",
+       "P-2221"
+      ]
+     },
+     {
+      "crew_id": "C-4679",
+      "duty_days": 3,
+      "rank": "Cabin Crew",
+      "pairings": [
+       "P-2201",
+       "P-2204",
+       "P-2207"
+      ]
+     },
+     {
+      "crew_id": "C-4874",
+      "duty_days": 3,
+      "rank": "Cabin Crew",
+      "pairings": [
+       "P-2215",
+       "P-2218",
+       "P-2221"
+      ]
+     },
+     {
+      "crew_id": "C-5211",
+      "duty_days": 3,
+      "rank": "Senior Cabin Crew",
+      "pairings": [
+       "P-2215",
+       "P-2218",
+       "P-2221"
+      ]
+     },
+     {
+      "crew_id": "C-5597",
+      "duty_days": 3,
+      "rank": "Senior Cabin Crew",
+      "pairings": [
+       "P-2201",
+       "P-2204",
+       "P-2207"
+      ]
+     },
+     {
+      "crew_id": "C-5788",
+      "duty_days": 3,
+      "rank": "First Officer",
+      "pairings": [
+       "P-2208",
+       "P-2211",
+       "P-2214"
+      ]
+     },
+     {
+      "crew_id": "C-5820",
+      "duty_days": 3,
+      "rank": "Captain",
+      "pairings": [
+       "P-2215",
+       "P-2218",
+       "P-2221"
+      ]
+     },
+     {
+      "crew_id": "C-5837",
+      "duty_days": 3,
+      "rank": "Captain",
+      "pairings": [
+       "P-2201",
+       "P-2204",
+       "P-2207"
+      ]
+     },
+     {
+      "crew_id": "C-5881",
+      "duty_days": 3,
+      "rank": "Cabin Crew",
+      "pairings": [
+       "P-2208",
+       "P-2211",
+       "P-2214"
+      ]
+     }
+    ]
+   },
+   "explanation": "Count roster days per crew across rosters.json. Everyone at the top of this list is a single-point-of-failure candidate.",
+   "rules_ref": []
+  },
+  {
+   "question_id": "Q62",
+   "tier": 2,
+   "persona": "Duty Manager",
+   "prompt": "Two A320 lines both lose their captain at 02:00Z. Do I have the reserve depth at BLR to cover both without a day-off callout?",
+   "expected_answer": {
+    "sufficient": false,
+    "a320_captain_reserves_in_window_at_0200": [
+     "C-3305"
+    ],
+    "detail": "Only 1 BLR A320 captain reserve is on call at that hour; the second cover has to be a day-off callout at ₹24000, or a deadhead from DEL."
+   },
+   "explanation": "Reserve captains are rating- and window-filtered. This is the depth problem behind scenario S6.",
+   "rules_ref": [
+    "RULE-BASE-07",
+    "RULE-QUAL-05"
+   ]
+  },
+  {
+   "question_id": "Q63",
+   "tier": 3,
+   "persona": "Crew Controller (ops desk)",
+   "prompt": "The entire cabin complement on VT-DXB's 18 Sep pairing calls in sick at 00:30Z. Can I rebuild it from reserves alone, and what does it cost?",
+   "expected_answer": {
+    "pairing_id": "P-2212",
+    "report_utc": "2026-09-18T02:00:00Z",
+    "needed": {
+     "Senior Cabin Crew": 1,
+     "Cabin Crew": 3
+    },
+    "reserves_in_window": {
+     "Senior Cabin Crew": [],
+     "Cabin Crew": [
+      "C-4809"
+     ]
+    },
+    "coverable_from_reserves_only": false,
+    "reserve_only_cost_inr": 38000,
+    "fallback": "Any shortfall goes to a day-off cabin callout at ₹12500 each; cancelling the pairing's legs is the last resort."
+   },
+   "explanation": "Filter cabin reserves by base, date and on-call window against the pairing's report time, then compare supply against the complement. All BLR cabin reserves are dual-rated, so RULE-QUAL-05 does not bind.",
+   "rules_ref": [
+    "RULE-BASE-07",
+    "RULE-QUAL-05",
+    "RULE-CERT-06"
+   ],
+   "grading_note": "Grade the reasoning chain (window filter -> rank match -> cost), not the exact wording."
+  },
+  {
+   "question_id": "Q64",
+   "tier": 3,
+   "persona": "Duty Manager",
+   "prompt": "Build me a fatigue watchlist for the rest of the week — who should I be keeping an eye on?",
+   "expected_answer": {
+    "watchlist": [
+     {
+      "crew_id": "C-1042",
+      "rank": "Captain",
+      "duty_hours_7d": 20.93,
+      "risk_score": 0.78,
+      "duty_days_this_week": 2
+     },
+     {
+      "crew_id": "C-3940",
+      "rank": "Captain",
+      "duty_hours_7d": 18.34,
+      "risk_score": 0.71,
+      "duty_days_this_week": 2
+     }
+    ],
+    "selection_rule": "rostered this week AND (7-day duty >= 40h at 15 Sep OR provided disruption-risk score >= 0.70)",
+    "why_it_matters": "These crew have the least headroom to absorb a delay or an extension, so they convert a small disruption into a re-crew."
+   },
+   "explanation": "Join duty_clocks.json, risk_signals.json and rosters.json. The threshold is a desk judgement call, so state it explicitly.",
+   "rules_ref": [
+    "RULE-DUTY-02"
+   ],
+   "grading_note": "Open-ended. Reward: an explicit threshold, a join across all three sources, and an operational 'so what'. Penalise: predicting risk scores rather than consuming the provided ones."
+  },
+  {
+   "question_id": "Q65",
+   "tier": 3,
+   "persona": "Crew Controller (ops desk)",
+   "prompt": "The Senior Cabin Crew on VT-DXA's 17 Sep pairing goes sick at 00:30Z. What is the cheapest legal cover?",
+   "expected_answer": {
+    "pairing_id": "P-2204",
+    "report_utc": "2026-09-17T01:30:00Z",
+    "reserve_scc_in_window": [],
+    "cheapest_legal_action": "Day-off SCC callout at ₹12500 — no reserve SCC window is open at 01:30",
+    "cost_inr": 12500,
+    "why_not_cheaper": "Cabin reserve windows open at 04:00Z; a report before that hour cannot be covered by the reserve pool at all."
+   },
+   "explanation": "The trap is that the cheapest option on the price list is not always reachable — the on-call window has to contain the report time.",
+   "rules_ref": [
+    "RULE-BASE-07",
+    "RULE-CERT-06"
+   ],
+   "grading_note": "Grade whether the answer checks the window before quoting the reserve price."
+  },
+  {
+   "question_id": "Q66",
+   "tier": 3,
+   "persona": "Crew Planner",
+   "prompt": "Rank the top three single points of failure in this week's plan and tell me what to do about each.",
+   "expected_answer": {
+    "suggested": [
+     {
+      "risk": "C-5417's recurrent_training expires 2026-09-17 but they are rostered on P-2213 on 19 Sep",
+      "impact": "A known-illegal assignment sitting in the plan (the one flagged roster exception)",
+      "mitigation": "Pre-assign a cabin reserve now rather than discovering it at report time; ₹9500",
+      "rules_ref": [
+       "RULE-CERT-06"
+      ]
+     },
+     {
+      "risk": "Only one BLR A320 captain reserve is on call in the early-morning window",
+      "impact": "A second simultaneous A320 captain sick call forces a day-off callout or a deadhead from DEL",
+      "mitigation": "Stagger reserve captain windows so two overlap across the 01:00-03:00Z report band",
+      "rules_ref": [
+       "RULE-BASE-07",
+       "RULE-QUAL-05"
+      ]
+     },
+     {
+      "risk": "Duties rostered close to their FDP ceiling (see Q57)",
+      "impact": "A 90-minute technical delay tips them over RULE-FDP-01 and forces a tail-leg re-crew or cancellation",
+      "mitigation": "Hold a reserve set against the tightest duty of each day; re-crewing one leg costs ₹75,000 against ₹250000 to cancel",
+      "rules_ref": [
+       "RULE-FDP-01"
+      ]
+     }
+    ],
+    "note": "Open-ended. Other well-argued answers (C-2087's duty clock, the ATR rating thin-ness) are equally valid."
+   },
+   "explanation": "Tier-3 rubric question. The point is to see whether the system reasons across cert, reserve-depth and FDP-margin dimensions at once rather than answering from one file.",
+   "rules_ref": [
+    "RULE-CERT-06",
+    "RULE-FDP-01",
+    "RULE-BASE-07"
+   ],
+   "grading_note": "Reward breadth across at least two distinct rule families plus a costed mitigation. Exact ranking is not graded."
+  },
+  {
+   "question_id": "Q67",
+   "tier": 3,
+   "persona": "Crew Planner",
+   "prompt": "If I could add exactly one more person to the reserve pool, what rank, rating and window should it be, and why?",
+   "expected_answer": {
+    "suggested": {
+     "rank": "Captain",
+     "ratings": [
+      "ATR72"
+     ],
+     "base": "BLR",
+     "window": {
+      "start": "00:00",
+      "end": "12:00"
+     },
+     "reasoning": "There is exactly one ATR-rated reserve captain (C-3315, 03:00-15:00). Any ATR captain sick call reporting before 03:00Z has no reserve cover at all, and there is no second ATR captain if C-3315 is already used."
+    },
+    "runner_up": {
+     "rank": "Senior Cabin Crew",
+     "window": {
+      "start": "00:00",
+      "end": "12:00"
+     },
+     "reasoning": "Cabin reserve windows all start at 04:00Z, leaving the early-morning reports uncovered on the cabin side."
+    },
+    "note": "Open-ended; judged on whether the gap is identified from window x rating x rank coverage rather than asserted."
+   },
+   "explanation": "Derived by cross-tabulating reserve_pool.json windows against the rank/rating mix in crew.json and the report times in rosters.json.",
+   "rules_ref": [
+    "RULE-BASE-07",
+    "RULE-QUAL-05"
+   ],
+   "grading_note": "Reward an explicit coverage gap backed by numbers. Any rank/window backed by a real gap is acceptable."
+  },
+  {
+   "question_id": "Q68",
+   "tier": 3,
+   "persona": "Crew Controller (ops desk)",
+   "prompt": "Write the message that goes to C-5417 about the training lapse, and the one that goes to their replacement.",
+   "expected_answer": {
+    "must_include_to_C5417": [
+     "crew_id and the pairing being removed (P-2213, 19 Sep)",
+     "the reason: recurrent_training expired 2026-09-17 (RULE-CERT-06)",
+     "that the removal is a compliance action, not a performance one",
+     "what they must do to be requalified and who to contact",
+     "acknowledgement request"
+    ],
+    "must_include_to_replacement": [
+     "crew_id, pairing_id and role",
+     "report time and place: 2026-09-19T02:00:00Z at BLR",
+     "the flights being covered",
+     "acknowledgement deadline and a contact"
+    ],
+    "note": "Judged on completeness and correctness of the times pulled from rosters.json, not on template wording."
+   },
+   "explanation": "Communication task built on scenario S5. Two audiences, different information needs — the compliance reason belongs in one message and not the other.",
+   "rules_ref": [
+    "RULE-CERT-06"
+   ],
+   "grading_note": "Reward correct times/ids and audience-appropriate content. Do not grade tone or phrasing."
+  },
+  {
+   "question_id": "Q69",
+   "tier": 3,
+   "persona": "Duty Manager",
+   "prompt": "It is 22:00Z on 14 Sep and I am handing over to the night desk. What should they pre-position for tomorrow?",
+   "expected_answer": {
+    "suggested": [
+     "Confirm which reserves are on call across tomorrow's report band and flag any hour with no rated cover",
+     "Re-check the duty clocks of tomorrow's rostered crew for anyone inside a few hours of the 60h/7d ceiling (C-2087 and C-3305 are the tight ones)",
+     "Pre-clear the flagged cert exception on C-5417 before it reaches its 19 Sep duty",
+     "Identify tomorrow's duties with the least FDP headroom so a delay decision can be made in minutes rather than hours",
+     "Have the deadhead option from DEL costed in advance (₹6500 plus ₹5400 per delay hour) so it is not improvised at 05:00Z"
+    ],
+    "note": "Open-ended handover question. Judged on operational reasoning and on using the snapshot time correctly."
+   },
+   "explanation": "Tier-3 rubric question mirroring Q38 but from the outgoing controller's perspective rather than the briefing designer's.",
+   "rules_ref": [],
+   "grading_note": "Reward: forward-looking items tied to specific data, not a generic checklist. Penalise: anything that requires data outside the snapshot."
+  },
+  {
+   "question_id": "Q70",
+   "tier": 3,
+   "persona": "Duty Manager",
+   "prompt": "Cancelling DX404 on 16 Sep versus re-crewing it — walk me through the money and the passenger impact.",
+   "expected_answer": {
+    "recrew": {
+     "action": "Full reserve set (Captain, FO, SCC, 3x Cabin Crew) operates DX404",
+     "cost_inr": 75000,
+     "passengers_carried": 162,
+     "legal": true
+    },
+    "cancel": {
+     "action": "Cancel DX404",
+     "cost_inr": 250000,
+     "passengers_stranded": 162,
+     "legal": true
+    },
+    "delta_inr": 175000,
+    "recommendation": "Re-crew. It is roughly 3.3x cheaper and it keeps 162 passengers moving; cancellation is the last resort."
+   },
+   "explanation": "Reserve set = 2 pilots x ₹18500 + 4 cabin x ₹9500 = ₹75,000 against ₹250000 to cancel. Matches scenario S4's ranked options.",
+   "rules_ref": [
+    "RULE-FDP-01",
+    "RULE-BASE-07"
+   ],
+   "grading_note": "Reward an explicit cost comparison plus the passenger consequence, not just the cheaper number."
+  }
+ ]
+}

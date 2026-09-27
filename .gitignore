@@ -1,0 +1,13 @@
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+logs/
+samples/
+.streamlit/
+
+# derived, regenerable in under a second
+data/crewops.db
+crew_env/
+.venv/
+venv/
